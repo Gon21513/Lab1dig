@@ -31,9 +31,6 @@ uint8_t counter;
 
 
 
-
-
-
 //|------------------------------prototipos------------------------------------|
 
 void setup(void);
@@ -47,8 +44,10 @@ void    main(void){
     setup();
 
     while(1){
+
         PORTA = counter; //poner el valor del contador en el puerto A
 
+        
     }
 }
 
@@ -89,20 +88,6 @@ void setup(void){
     OSCCONbits.IRCF = 0b100; // 8 MHz
     OSCCONbits.SCS = 1; // Seleccionar oscilador interno
 
-//------------------UART-------------
-    TXSTAbits.SYNC = 0;//asincrono
-    TXSTAbits.BRGH = 1;//high baud rate select bit
-    
-    BAUDCTLbits.BRG16 = 1;//utilizar 16 bits baud rate
-    
-    SPBRG = 25; //configurar a 9615
-    SPBRGH = 0;    
-
-    
-    RCSTAbits.SPEN = 1;//habilitar la comunicacion serial
-    RCSTAbits.RX9 = 0;//deshabiliamos bit de direccion
-    RCSTAbits.CREN = 1;//habilitar recepcion 
-    TXSTAbits.TXEN = 1;//habiliar la transmision
 
     
     //Se inicia el contador en 0
@@ -111,3 +96,25 @@ void setup(void){
 }
 
        
+
+
+//----------------Interrupcion--------------------
+void __interrupt() isr(void) {
+    // Comprobar si se ha producido una interrupción en PORTB 
+    if (RBIF) {
+        // Si RB0 está presionado  y RB1 no está presionado 
+        if (RB0 == 0 && RB1 == 1) {
+            counter++; // Incrementar el contador
+        }
+        // Si RB0 no está presionado  y RB1 está presionado 
+        if (RB0 == 1 && RB1 == 0) {
+            counter--; // Decrementar el contador
+        }
+        
+
+        // Limpiar la bandera de interrupción de PORTB 
+        RBIF = 0;
+    }
+     __delay_ms(10);
+
+}
