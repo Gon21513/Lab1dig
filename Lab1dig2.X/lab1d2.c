@@ -25,9 +25,12 @@
 #include<xc.h>
 #include<pic.h>
 #include<stdint.h>
+#include "boton.h"
+#include "ADC.h"
 
 //-------------------------------variables------------------------------------|
 uint8_t counter;
+int ADC;
 
 
 
@@ -42,10 +45,16 @@ void __interrupt() isr(void);
 
 void    main(void){
     setup();
-
     while(1){
-
+        
         PORTC = counter; //poner el valor del contador en el puerto A
+
+        //verifica la conversion adc
+        if (ADCON0bits.GO == 0){
+            ADCON0bits.GO = 1;
+            __delay_ms(50);
+        }
+
 
         
     }
@@ -56,43 +65,42 @@ void    main(void){
 void setup(void){
     
 //-------------configuracion de puertos----------------
-    ANSEL   =   0;
-    ANSELH  =   0;
-    TRISA   =   0;
+    TRISA  = 0;
     TRISC = 0;
-     //botones
+    TRISD = 0;
     
 
-            
-    TRISBbits.TRISB0 = 1; //rb0 como entrada
-    TRISBbits.TRISB1 = 1; //rb1 como entrada 
+
     
-//----------pullups------------------
-    OPTION_REGbits.nRBPU = 0; //habilitarr pullups
-    WPUBbits.WPUB0 = 1;
-    WPUBbits.WPUB1 = 1; 
-    
-    IOCBbits.IOCB0 = 1; //habilitar interrupciones en rb0
-    IOCBbits.IOCB1 = 1; // habilitar interrupciones en rb1
+    ioc_init(0);
+    ioc_init(1);
 
 //------------interrupciones-----------------
-    INTCONbits.GIE = 1; //habilitar interrupciones globales
     INTCONbits.RBIE = 1; //habilitar interrupciones en portb
-    INTCONbits.PEIE = 1;
+    INTCONbits.PEIE = 1;//habilitar interrupciones perifericas 
+    INTCONbits.GIE = 1; //habilitar interrupciones globales
     INTCONbits.RBIF = 0; //limpirar bander de interrupcion de portb
+
+    
+    //del adc
+    PIE1bits.ADIE = 1; // habilitar interrupciones de ADC
+
     
     
    //Se inician los puertos 
-    PORTA   =   0;
-    PORTB   =   0;
+    PORTA = 0;
+    PORTB = 0;
     PORTC = 0;
+    PORTD = 0;
     
     
 // --------------- Oscilador --------------- 
     OSCCONbits.IRCF = 0b100; // 8 MHz
     OSCCONbits.SCS = 1; // Seleccionar oscilador interno
 
-
+//----------------ADC ------------------
+    //ADC
+    adc_init(0);
     
     //Se inicia el contador en 0
     counter =   0;
@@ -104,8 +112,7 @@ void setup(void){
 
 //----------------Interrupcion--------------------
 void __interrupt() isr(void) {
-    // Comprobar si se ha producido una interrupción en PORTB 
-    if (RBIF) {
+if (RBIF) {
         // Si RB0 está presionado  y RB1 no está presionado 
         if (RB0 == 0 && RB1 == 1) {
             counter++; // Incrementar el contador
@@ -119,6 +126,13 @@ void __interrupt() isr(void) {
         // Limpiar la bandera de interrupción de PORTB 
         RBIF = 0;
     }
-     __delay_ms(10);
 
+     //__delay_ms(10);
+     
+    if (PIR1bits.ADIF){
+        ADC = read_ADC();
+        PORTD = ADC;
+    }
+    PIR1bits.ADIF = 0;
+    return;
 }
