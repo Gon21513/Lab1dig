@@ -26,8 +26,9 @@
 #define ADC_H
 
 void adc_init(int channel);
-int read_ADC();
+void read_ADC(uint8_t dato);
 void change_channel_ADC(int channel);
 int get_channel_ADC();
-
+void LH (uint8_t dato);
+void segmentos (uint8_t dato);
 #endif // ADC_H
