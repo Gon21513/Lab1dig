@@ -9,29 +9,6 @@
 #include "boton.h"
 #include <xc.h>
 
-uint8_t ADC;
-uint8_t low;
-uint8_t high;
-
-uint8_t TABLA[16] = {
-    0x3F, // 0
-    0x06, // 1
-    0x5B, // 2
-    0x4F, // 3
-    0x66, // 4
-    0x6D, // 5
-    0x7D, // 6
-    0x07, // 7
-    0x7F, // 8
-    0x6F, // 9
-    0x77, // A
-    0x7C, // B
-    0x39, // C
-    0x5E, // D
-    0x79, // E
-    0x71  // F
-};
-
 
 
 void adc_init(int channel){
@@ -120,12 +97,6 @@ void adc_init(int channel){
             TRISBbits.TRISB5 = 1;
             break;            
     }
-}
-
-//read adc
-void read_ADC(uint8_t dato){
-    ADC = dato;
-    //return ADRESH;
 }
 
 
@@ -238,15 +209,5 @@ int get_channel_ADC(){
         return 13;
     }
     return 0xff;
-}
-
-void LH(uint8_t dato){
-    low = dato & 0x0F;
-    high = (dato >> 4) & 0x0F;
-    
-}
-
-void segmentos (uint8_t dato){
-    PORTD = TABLA[dato];
 }
 

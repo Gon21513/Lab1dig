@@ -39,6 +39,10 @@ void ioc_init(char pin) {
         case 1:
             TRISBbits.TRISB1 = 1;
             break;
+            
+        case 2:
+            TRISBbits.TRISB2 = 0;
+            break;
         // Agregar más casos según sea necesario para otros pines
         default:
             break;
@@ -52,6 +56,10 @@ void ioc_init(char pin) {
         case 1:
             IOCBbits.IOCB1 = 1;
             break;
+            
+        case 2:
+            IOCBbits.IOCB2 = 0;
+            break;
         // Agregar más casos según sea necesario para otros pines
         default:
             break;
@@ -64,6 +72,10 @@ void ioc_init(char pin) {
             break;
         case 1:
             WPUBbits.WPUB1 = 1;
+            break;
+            
+        case 2:
+            WPUBbits.WPUB2 = 0;
             break;
         // Agregar más casos según sea necesario para otros pines
         default:

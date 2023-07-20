@@ -27,6 +27,7 @@
 #include<stdint.h>
 #include "boton.h"
 #include "ADC.h"
+#include "display.h"
 
 //-------------------------------variables------------------------------------|
 uint8_t counter;
@@ -79,20 +80,20 @@ if (RBIF) {
         PORTE = 0;
     
     // Chequear el valor de la variable bandera y actualizar el display correspondiente
-
-        if (bandera == 0){//chequear la nbadera
-            //PORTD = display[2];// usar el prot c
-            PORTE = 1;// habilita el diaplay
-            bandera = 1;//cambia el valor de la bandra
-            
-        }
-        else if (bandera == 1){ //chequea si la bandera es 1
+//
+//        if (bandera == 0){//chequear la nbadera
+//            //PORTD = display[2];// usar el prot c
+//            PORTE = 1;// habilita el diaplay
+//            bandera = 1;//cambia el valor de la bandra
+//            
+        //}
+        if (bandera == 0){ //chequea si la bandera es 1
             //PORTD = display[1];// muestra el digito en potrc
             segmentos(high);
             PORTE = 2;// habilita display de decenas
-            bandera = 2;//cambia la bandera
+            bandera = 1;//cambia la bandera
         }
-        else if (bandera == 2){ //chequea  si la bandera es 2
+        else if (bandera == 1){ //chequea  si la bandera es 2
             //PORTD = display[0];//
             segmentos(low);
             PORTE = 4;//habiliya display de unidades
@@ -114,6 +115,17 @@ void    main(void){
         
         PORTC = counter; //poner el valor del contador en el puerto A
         LH(ADC);
+        
+        
+        //alarma
+        
+        if (ADC < counter){
+            PORTBbits.RB2 = 0;
+        }
+        else {
+            PORTBbits.RB2 = 1;
+        }
+              
         //verifica la conversion adc
         if (ADCON0bits.GO == 0){
             ADCON0bits.GO = 1;
@@ -143,6 +155,8 @@ void setup(void){
     
     ioc_init(0);
     ioc_init(1);
+    ioc_init(2);
+
 
 //------------interrupciones-----------------
     INTCONbits.RBIE = 1; //habilitar interrupciones en portb

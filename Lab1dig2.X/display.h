@@ -19,14 +19,23 @@
  * TERMS. 
  */
 
+/* 
+ * File:   
+ * Author: 
+ * Comments:
+ * Revision history: 
+ */
 
-#include <xc.h> // include processor files - each processor file is guarded.  
+#include <xc.h> 
+// This is a guard condition so that contents of this file are not included
+// more than once.  
+#ifndef DISPLAY_H
+#define	DISPLAY_H
 
-#ifndef ADC_H
-#define ADC_H
+void read_ADC(uint8_t dato);
 
-void adc_init(int channel);
-void change_channel_ADC(int channel);
-int get_channel_ADC();
+void LH (uint8_t dato);
+void segmentos (uint8_t dato);
 
-#endif // ADC_H
+#endif	//DISPLAY_H
+
